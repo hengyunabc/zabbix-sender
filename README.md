@@ -15,7 +15,7 @@ https://github.com/berngp/docker-zabbix
 
 ```java
 		String host = "127.0.0.1";
-		int port = 5001;
+		int port = 10051;
 		ZabbixSender zabbixSender = new ZabbixSender(host, port);
 
 		DataObject dataObject = new DataObject();
