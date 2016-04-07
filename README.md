@@ -7,7 +7,7 @@ https://www.zabbix.org/wiki/Docs/protocols/zabbix_sender/2.0
 
 https://www.zabbix.org/wiki/Docs/protocols/zabbix_sender/1.8/java_example
 
-If you don't have a zabbix server, recommend use docker to setup test enviroment.
+If you don't have a zabbix server, recommend use docker to setup test environment.
 
 https://github.com/berngp/docker-zabbix
 
@@ -31,4 +31,21 @@ https://github.com/berngp/docker-zabbix
 		} else {
 			System.err.println("sned fail!");
 		}
-		```
+```
+
+## Maven dependency
+
+```xml
+<dependency>
+    <groupId>io.github.hengyunabc</groupId>
+    <artifactId>zabbix-sender</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
+## Others
+
+https://github.com/hengyunabc/zabbix-api
+
+## License
+Apache License V2

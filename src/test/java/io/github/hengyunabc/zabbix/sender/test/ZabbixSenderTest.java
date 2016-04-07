@@ -26,7 +26,7 @@ public class ZabbixSenderTest {
 		dataObject.setKey("test_discovery_rule");
 		
 		JSONObject data = new JSONObject();
-		List<JSONObject> aray = new LinkedList<>();
+		List<JSONObject> aray = new LinkedList<JSONObject>();
 		JSONObject xxx = new JSONObject();
 		xxx.put("hello", "hello");
 		

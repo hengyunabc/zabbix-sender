@@ -1,14 +1,48 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>9</version>
+	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.hengyunabc</groupId>
 	<artifactId>zabbix-sender</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<name>zabbix-sender</name>
+	<description>zabbix-sender for java</description>
+	<url>https://github.com/hengyunabc/zabbix-sender</url>
+	<inceptionYear>2015</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>hengyunabc</id>
+			<name>hengyunabc</name>
+			<email>hengyunabc@gmail.com</email>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:hengyunabc/zabbix-sender.git</connection>
+		<developerConnection>scm:git:git@github.com:hengyunabc/zabbix-sender.git</developerConnection>
+		<url>https://github.com/hengyunabc/zabbix-sender</url>
+	</scm>
+
 	<properties>
-		<maven.compiler.target>1.7</maven.compiler.target>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<java.version>1.7</java.version>
+		<maven.compiler.target>1.6</maven.compiler.target>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -26,13 +60,13 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.1.39</version>
+			<version>1.2.8</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.3.6</version>
+			<version>4.5.2</version>
 		</dependency>
 
 		<!-- Logging with SLF4J & LogBack -->
