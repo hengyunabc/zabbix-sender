@@ -9,9 +9,17 @@ https://www.zabbix.org/wiki/Docs/protocols/zabbix_sender/1.8/java_example
 
 If you don't have a zabbix server, recommend use docker to setup test environment.
 
-https://github.com/berngp/docker-zabbix
+https://hub.docker.com/u/zabbix/
+
+Support zabbix server 2.4/3.0.
+
 
 ##Example
+
+Zabbix Sender do not create host/item, you have to create them by yourself, or try to use [zabbix-api](https://github.com/hengyunabc/zabbix-api).
+
+1. Create/select a host in zabbix server.
+1. Create a item in zabbix server, which name is "testItem", type is "Zabbix trapper".
 
 ```java
 		String host = "127.0.0.1";
@@ -22,7 +30,8 @@ https://github.com/berngp/docker-zabbix
 		dataObject.setHost("172.17.42.1");
 		dataObject.setKey("test_item");
 		dataObject.setValue("10");
-		dataObject.setClock(System.currentTimeMillis());
+		// TimeUnit is SECONDS.
+		dataObject.setClock(System.currentTimeMillis()/1000);
 		SenderResult result = zabbixSender.send(dataObject);
 
 		System.out.println("result:" + result);
@@ -39,7 +48,7 @@ https://github.com/berngp/docker-zabbix
 <dependency>
     <groupId>io.github.hengyunabc</groupId>
     <artifactId>zabbix-sender</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 

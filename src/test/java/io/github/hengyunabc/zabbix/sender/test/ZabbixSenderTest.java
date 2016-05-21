@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.alibaba.fastjson.JSONObject;
 
 public class ZabbixSenderTest {
-	
+
 
 	@Test
 	public void test_LLD_rule() throws IOException {
@@ -24,17 +24,17 @@ public class ZabbixSenderTest {
 		DataObject dataObject = new DataObject();
 		dataObject.setHost("172.17.42.1");
 		dataObject.setKey("test_discovery_rule");
-		
+
 		JSONObject data = new JSONObject();
 		List<JSONObject> aray = new LinkedList<JSONObject>();
 		JSONObject xxx = new JSONObject();
 		xxx.put("hello", "hello");
-		
+
 		aray.add(xxx);
 		data.put("data", aray);
-		
+
 		dataObject.setValue(data.toJSONString());
-		dataObject.setClock(System.currentTimeMillis());
+		dataObject.setClock(System.currentTimeMillis()/1000);
 		SenderResult result = zabbixSender.send(dataObject);
 
 		System.out.println("result:" + result);
@@ -43,10 +43,10 @@ public class ZabbixSenderTest {
 		} else {
 			System.err.println("sned fail!");
 		}
-		
+
 
 	}
-	
+
 	@Test
 	public void test() throws IOException {
 		String host = "127.0.0.1";
@@ -57,7 +57,7 @@ public class ZabbixSenderTest {
 		dataObject.setHost("172.17.42.1");
 		dataObject.setKey("a[test, jvm.mem.non-heap.used]");
 		dataObject.setValue("10");
-		dataObject.setClock(System.currentTimeMillis());
+		dataObject.setClock(System.currentTimeMillis()/1000);
 		SenderResult result = zabbixSender.send(dataObject);
 
 		System.out.println("result:" + result);
@@ -66,7 +66,7 @@ public class ZabbixSenderTest {
 		} else {
 			System.err.println("sned fail!");
 		}
-		
+
 
 	}
 

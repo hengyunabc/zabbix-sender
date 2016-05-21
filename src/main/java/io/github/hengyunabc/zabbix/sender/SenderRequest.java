@@ -4,11 +4,19 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 
+/**
+ *
+ * @author hengyunabc
+ *
+ */
 public class SenderRequest {
 	static final byte header[] = { 'Z', 'B', 'X', 'D', '\1' };
 
 	String request = "sender data";
 
+	/**
+	 * TimeUnit is SECONDS.
+	 */
 	long clock;
 
 	List<DataObject> data;
@@ -28,8 +36,7 @@ public class SenderRequest {
 		result[header.length + 2] = (byte) ((jsonBytes.length >> 16) & 0x0000FF);
 		result[header.length + 3] = (byte) ((jsonBytes.length >> 24) & 0x000000FF);
 
-		System.arraycopy(jsonBytes, 0, result, header.length + 4 + 4,
-				jsonBytes.length);
+		System.arraycopy(jsonBytes, 0, result, header.length + 4 + 4, jsonBytes.length);
 		return result;
 	}
 
@@ -41,10 +48,20 @@ public class SenderRequest {
 		this.request = request;
 	}
 
+	/**
+	 * TimeUnit is SECONDS.
+	 *
+	 * @return
+	 */
 	public long getClock() {
 		return clock;
 	}
 
+	/**
+	 * TimeUnit is SECONDS.
+	 *
+	 * @param clock
+	 */
 	public void setClock(long clock) {
 		this.clock = clock;
 	}
