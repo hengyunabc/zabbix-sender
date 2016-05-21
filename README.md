@@ -20,6 +20,8 @@ Zabbix Sender do not create host/item, you have to create them by yourself, or t
 
 1. Create/select a host in zabbix server.
 1. Create a item in zabbix server, which name is "testItem", type is "Zabbix trapper".
+1. Send data.
+1. If success, you can find data in web browser. Open "Monitoring"/"Latest data", then filter with Item name or Hosts.
 
 ```java
 		String host = "127.0.0.1";
