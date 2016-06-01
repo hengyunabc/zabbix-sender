@@ -50,7 +50,7 @@ Zabbix Sender do not create host/item, you have to create them by yourself, or t
 <dependency>
     <groupId>io.github.hengyunabc</groupId>
     <artifactId>zabbix-sender</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 
