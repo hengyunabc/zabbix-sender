@@ -55,7 +55,7 @@ public class DataObject {
 
 		public DataObject build() {
 			if (clock == null) {
-				clock = System.currentTimeMillis();
+				clock = System.currentTimeMillis() / 1000;
 			}
 			return new DataObject(clock, host, key, value);
 		}
@@ -92,7 +92,7 @@ public class DataObject {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
 	@Override
 	public String toString(){
 		return JSON.toJSONString(this);
