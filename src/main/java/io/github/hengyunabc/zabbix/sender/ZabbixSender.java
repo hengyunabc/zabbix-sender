@@ -5,8 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -17,7 +18,9 @@ import com.alibaba.fastjson.JSONObject;
  *
  */
 public class ZabbixSender {
-	String host;
+    private static final Pattern PATTERN = Pattern.compile("[^0-9\\.]+");
+
+    String host;
 	int port;
 	int connectTimeout = 3 * 1000;
 	int socketTimeout = 3 * 1000;
@@ -46,9 +49,7 @@ public class ZabbixSender {
 	 * @throws IOException
 	 */
 	public SenderResult send(DataObject dataObject, long clock) throws IOException {
-		List<DataObject> dataObjectList = new LinkedList<DataObject>();
-		dataObjectList.add(dataObject);
-		return send(dataObjectList, clock);
+		return send(Collections.singletonList(dataObject), clock);
 	}
 
 	public SenderResult send(List<DataObject> dataObjectList) throws IOException {
@@ -112,7 +113,7 @@ public class ZabbixSender {
 			// example info: processed: 1; failed: 0; total: 1; seconds spent:
 			// 0.000053
 			// after split: [, 1, 0, 1, 0.000053]
-			String[] split = info.split("[^0-9\\.]+");
+			String[] split = PATTERN.split(info);
 
 			senderResult.setProcessed(Integer.parseInt(split[1]));
 			senderResult.setFailed(Integer.parseInt(split[2]));
