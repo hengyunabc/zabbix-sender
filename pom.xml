@@ -8,7 +8,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.hengyunabc</groupId>
 	<artifactId>zabbix-sender</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5-SNAPSHOT</version>
 
 	<name>zabbix-sender</name>
 	<description>zabbix-sender for java</description>
