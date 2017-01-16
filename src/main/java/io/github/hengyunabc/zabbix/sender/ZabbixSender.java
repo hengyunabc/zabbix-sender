@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.codec.Charsets;
 
 /**
  *
@@ -107,7 +108,7 @@ public class ZabbixSender {
 
 			// header('ZBXD\1') + len + 0
 			// 5 + 4 + 4
-			String jsonString = new String(responseData, 13, readCount - 13);
+			String jsonString = new String(responseData, 13, readCount - 13, Charsets.UTF_8);
 			JSONObject json = JSON.parseObject(jsonString);
 			String info = json.getString("info");
 			// example info: processed: 1; failed: 0; total: 1; seconds spent:
