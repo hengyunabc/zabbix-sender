@@ -1,17 +1,17 @@
 package io.github.hengyunabc.zabbix.sender;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.codec.Charsets;
 
 /**
  *
@@ -20,6 +20,7 @@ import org.apache.commons.codec.Charsets;
  */
 public class ZabbixSender {
     private static final Pattern PATTERN = Pattern.compile("[^0-9\\.]+");
+    private final static Charset UTF8 = Charset.forName("UTF-8");
 
     String host;
 	int port;
@@ -108,7 +109,7 @@ public class ZabbixSender {
 
 			// header('ZBXD\1') + len + 0
 			// 5 + 4 + 4
-			String jsonString = new String(responseData, 13, readCount - 13, Charsets.UTF_8);
+			String jsonString = new String(responseData, 13, readCount - 13, UTF8);
 			JSONObject json = JSON.parseObject(jsonString);
 			String info = json.getString("info");
 			// example info: processed: 1; failed: 0; total: 1; seconds spent:
