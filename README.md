@@ -11,7 +11,7 @@ If you don't have a zabbix server, recommend use docker to setup test environmen
 
 https://hub.docker.com/u/zabbix/
 
-Support zabbix server 2.4/3.0.
+Support zabbix server 2.4/3.0/4.X/5.X
 
 
 ##Example
