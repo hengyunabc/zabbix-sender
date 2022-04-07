@@ -9,8 +9,11 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -19,6 +22,9 @@ import java.util.regex.Pattern;
  *
  */
 public class ZabbixSender {
+
+	private static final Logger logger = Logger.getLogger(ZabbixSender.class.getName());
+
     private static final Pattern PATTERN = Pattern.compile("[^0-9\\.]+");
     private final static Charset UTF8 = Charset.forName("UTF-8");
 
@@ -26,6 +32,9 @@ public class ZabbixSender {
 	int port;
 	int connectTimeout = 3 * 1000;
 	int socketTimeout = 3 * 1000;
+
+	private boolean isTlsNeeded;
+	private CertificateStorage certificateStorage;
 
 	public ZabbixSender(String host, int port) {
 		this.host = host;
@@ -73,7 +82,11 @@ public class ZabbixSender {
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
 		try {
-			socket = new Socket();
+			if (isTlsNeeded) {
+				socket = SocketFactory.createSSLSocket(certificateStorage);
+			} else {
+				socket = SocketFactory.createSocket();
+			}
 
 			socket.setSoTimeout(socketTimeout);
 			socket.connect(new InetSocketAddress(host, port), connectTimeout);
@@ -122,6 +135,8 @@ public class ZabbixSender {
 			senderResult.setTotal(Integer.parseInt(split[3]));
 			senderResult.setSpentSeconds(Float.parseFloat(split[4]));
 
+		} catch (GeneralSecurityException e) {
+			logger.log(Level.SEVERE, "Unable to create SSLSocket due to: " + e.getMessage());
 		} finally {
 			if (socket != null) {
 				socket.close();
@@ -167,5 +182,21 @@ public class ZabbixSender {
 
 	public void setSocketTimeout(int socketTimeout) {
 		this.socketTimeout = socketTimeout;
+	}
+
+	public boolean isTlsNeeded() {
+		return isTlsNeeded;
+	}
+
+	public void setTlsNeeded(boolean tlsNeeded) {
+		isTlsNeeded = tlsNeeded;
+	}
+
+	public CertificateStorage getCertificateStorage() {
+		return certificateStorage;
+	}
+
+	public void setCertificateStorage(CertificateStorage certificateStorage) {
+		this.certificateStorage = certificateStorage;
 	}
 }
