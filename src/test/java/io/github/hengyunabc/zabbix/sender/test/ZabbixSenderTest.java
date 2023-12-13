@@ -1,28 +1,51 @@
 package io.github.hengyunabc.zabbix.sender.test;
 
+import com.alibaba.fastjson.JSONObject;
 import io.github.hengyunabc.zabbix.sender.DataObject;
 import io.github.hengyunabc.zabbix.sender.SenderResult;
 import io.github.hengyunabc.zabbix.sender.ZabbixSender;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.junit.Test;
-
-import com.alibaba.fastjson.JSONObject;
+import java.util.Properties;
 
 public class ZabbixSenderTest {
 
-	String host = "127.0.0.1";
-	int port = 49156;
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(ZabbixSenderTest.class);
+	String host;
+	int port;
+	String hostId;
+
+	@Before
+	public void setup() throws IOException {
+		Properties props = new Properties();
+		InputStream is = null;
+		try {
+			is = getClass().getClassLoader().getResourceAsStream("/test.properties");
+			props.load(is);
+		} finally {
+			if (is != null) is.close();
+		}
+
+		host = props.getProperty("zabbix.server.host", "127.0.0.1");
+		port = Integer.parseInt(props.getProperty("zabbix.server.port","49156"));
+		hostId = System.getProperty("zabbix.hostId", "172.17.42.1");
+	}
+
 
 	@Test
 	public void test_LLD_rule() throws IOException {
 		ZabbixSender zabbixSender = new ZabbixSender(host, port);
 
 		DataObject dataObject = new DataObject();
-		dataObject.setHost("172.17.42.1");
+		dataObject.setHost(hostId);
 		dataObject.setKey("healthcheck[dw,notificationserver]");
 
 		JSONObject data = new JSONObject();
@@ -37,14 +60,7 @@ public class ZabbixSenderTest {
 		dataObject.setClock(System.currentTimeMillis()/1000);
 		SenderResult result = zabbixSender.send(dataObject);
 
-		System.out.println("result:" + result);
-		if (result.success()) {
-			System.out.println("send success.");
-		} else {
-			System.err.println("send fail!");
-		}
-
-
+		logger.info("result: {}, success: {}", result, result.success());
 	}
 
 	@Test
@@ -52,20 +68,13 @@ public class ZabbixSenderTest {
 		ZabbixSender zabbixSender = new ZabbixSender(host, port);
 
 		DataObject dataObject = new DataObject();
-		dataObject.setHost("172.17.42.1");
+		dataObject.setHost(hostId);
 		dataObject.setKey("a[test, jvm.mem.non-heap.used]");
 		dataObject.setValue("10");
 		dataObject.setClock(System.currentTimeMillis()/1000);
 		SenderResult result = zabbixSender.send(dataObject);
 
-		System.out.println("result:" + result);
-		if (result.success()) {
-			System.out.println("send success.");
-		} else {
-			System.err.println("send fail!");
-		}
-
-
+		logger.info("result: {}, success: {}", result, result.success());
 	}
 
 }
