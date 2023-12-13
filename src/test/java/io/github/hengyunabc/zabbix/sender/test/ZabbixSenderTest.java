@@ -10,7 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -26,17 +27,17 @@ public class ZabbixSenderTest {
 	@Before
 	public void setup() throws IOException {
 		Properties props = new Properties();
-		InputStream is = null;
+		Reader reader = null;
 		try {
-			is = getClass().getClassLoader().getResourceAsStream("/test.properties");
-			props.load(is);
+			reader = new InputStreamReader(getClass().getResourceAsStream("/test.properties"));
+			props.load(reader);
 		} finally {
-			if (is != null) is.close();
+			if (reader != null) reader.close();
 		}
 
 		host = props.getProperty("zabbix.server.host", "127.0.0.1");
 		port = Integer.parseInt(props.getProperty("zabbix.server.port","49156"));
-		hostId = System.getProperty("zabbix.hostId", "172.17.42.1");
+		hostId = props.getProperty("zabbix.hostId", "172.17.42.1");
 	}
 
 
