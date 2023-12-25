@@ -2,10 +2,14 @@ package io.github.hengyunabc.zabbix.sender;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -21,6 +25,12 @@ import java.util.regex.Pattern;
 public class ZabbixSender {
     private static final Pattern PATTERN = Pattern.compile("[^0-9\\.]+");
     private final static Charset UTF8 = Charset.forName("UTF-8");
+
+	private final static String ZABBIX_HOST = "zabbix.host";
+	private final static String ZABBIX_PORT = "zabbix.port";
+
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(ZabbixSender.class);
 
     String host;
 	int port;
@@ -67,74 +77,84 @@ public class ZabbixSender {
 	 * @throws IOException
 	 */
 	public SenderResult send(List<DataObject> dataObjectList, long clock) throws IOException {
-		SenderResult senderResult = new SenderResult();
-
-		Socket socket = null;
-		InputStream inputStream = null;
-		OutputStream outputStream = null;
+		final String meth = "send";
+		final long startMs = System.currentTimeMillis();
 		try {
-			socket = new Socket();
+			MDC.put(ZABBIX_HOST, host);
+			MDC.put(ZABBIX_PORT, String.valueOf(port));
+			logger.debug("start {}", meth);
+			SenderResult senderResult = new SenderResult();
 
-			socket.setSoTimeout(socketTimeout);
-			socket.connect(new InetSocketAddress(host, port), connectTimeout);
+			Socket socket = null;
+			InputStream inputStream = null;
+			OutputStream outputStream = null;
+			try {
+				socket = new Socket();
 
-			inputStream = socket.getInputStream();
-			outputStream = socket.getOutputStream();
+				socket.setSoTimeout(socketTimeout);
+				socket.connect(new InetSocketAddress(host, port), connectTimeout);
 
-			SenderRequest senderRequest = new SenderRequest();
-			senderRequest.setData(dataObjectList);
-			senderRequest.setClock(clock);
+				inputStream = socket.getInputStream();
+				outputStream = socket.getOutputStream();
 
-			outputStream.write(senderRequest.toBytes());
+				SenderRequest senderRequest = new SenderRequest();
+				senderRequest.setData(dataObjectList);
+				senderRequest.setClock(clock);
 
-			outputStream.flush();
+				outputStream.write(senderRequest.toBytes());
 
-			// normal responseData.length < 100
-			byte[] responseData = new byte[512];
+				outputStream.flush();
 
-			int readCount = 0;
+				// normal responseData.length < 100
+				byte[] responseData = new byte[512];
 
-			while (true) {
-				int read = inputStream.read(responseData, readCount, responseData.length - readCount);
-				if (read <= 0) {
-					break;
+				int readCount = 0;
+
+				while (true) {
+					int read = inputStream.read(responseData, readCount, responseData.length - readCount);
+					if (read <= 0) {
+						break;
+					}
+					readCount += read;
 				}
-				readCount += read;
+
+				if (readCount < 13) {
+					// seems zabbix server return "[]"?
+					senderResult.setbReturnEmptyArray(true);
+				}
+
+				// header('ZBXD\1') + len + 0
+				// 5 + 4 + 4
+				String jsonString = new String(responseData, 13, readCount - 13, UTF8);
+				JSONObject json = JSON.parseObject(jsonString);
+				String info = json.getString("info");
+				// example info: processed: 1; failed: 0; total: 1; seconds spent:
+				// 0.000053
+				// after split: [, 1, 0, 1, 0.000053]
+				String[] split = PATTERN.split(info);
+
+				senderResult.setProcessed(Integer.parseInt(split[1]));
+				senderResult.setFailed(Integer.parseInt(split[2]));
+				senderResult.setTotal(Integer.parseInt(split[3]));
+				senderResult.setSpentSeconds(Float.parseFloat(split[4]));
+
+			} finally {
+				if (socket != null) {
+					socket.close();
+				}
+				if (inputStream != null) {
+					inputStream.close();
+				}
+				if (outputStream != null) {
+					outputStream.close();
+				}
 			}
-
-			if (readCount < 13) {
-				// seems zabbix server return "[]"?
-				senderResult.setbReturnEmptyArray(true);
-			}
-
-			// header('ZBXD\1') + len + 0
-			// 5 + 4 + 4
-			String jsonString = new String(responseData, 13, readCount - 13, UTF8);
-			JSONObject json = JSON.parseObject(jsonString);
-			String info = json.getString("info");
-			// example info: processed: 1; failed: 0; total: 1; seconds spent:
-			// 0.000053
-			// after split: [, 1, 0, 1, 0.000053]
-			String[] split = PATTERN.split(info);
-
-			senderResult.setProcessed(Integer.parseInt(split[1]));
-			senderResult.setFailed(Integer.parseInt(split[2]));
-			senderResult.setTotal(Integer.parseInt(split[3]));
-			senderResult.setSpentSeconds(Float.parseFloat(split[4]));
-
+			return senderResult;
 		} finally {
-			if (socket != null) {
-				socket.close();
-			}
-			if (inputStream != null) {
-				inputStream.close();
-			}
-			if (outputStream != null) {
-				outputStream.close();
-			}
+			logger.debug("exit {} after {} ms", meth, System.currentTimeMillis() - startMs);
+			MDC.remove(ZABBIX_PORT);
+			MDC.remove(ZABBIX_HOST);
 		}
-
-		return senderResult;
 	}
 
 	public String getHost() {

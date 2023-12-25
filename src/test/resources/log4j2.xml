@@ -1,0 +1,20 @@
+<Configuration name="junit" monitorInterval="30">
+    <Appenders>
+        <!-- Without matching console logging values do not appear in Cassandra tables -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %X %l: %m%n</pattern>
+            </PatternLayout>
+
+        </Console>
+    </Appenders>
+
+    <Loggers>
+         <logger name="io" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <Root level="TRACE">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
